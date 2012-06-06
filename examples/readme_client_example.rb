@@ -1,5 +1,3 @@
-$: << File.join(File.absolute_path(__FILE__), '..', 'lib')
-
 require 'pulse-meter'
 PulseMeter.redis = Redis.new
 
@@ -20,6 +18,27 @@ hashed_counter.event(:x => 1)
 hashed_counter.event(:y => 5)
 hashed_counter.event(:y => 1)
 p hashed_counter.value
+
+# alternative way
+
+cfg = PulseMeter::Sensor::Configuration.new(
+  :my_counter => {:sensor_type => 'counter'},
+  :my_value => {:sensor_type => 'indicator'},
+  :my_h_counter => {:sensor_type => 'hashed_counter'}
+)
+
+cfg.my_counter(1)
+cfg.my_counter(2)
+puts cfg.sensor(:my_counter).value
+
+cfg.my_value(3.14)
+cfg.my_value(2.71)
+puts cfg.sensor(:my_value).value
+
+cfg.my_h_counter(:x => 1)
+cfg.my_h_counter(:y => 5)
+cfg.my_h_counter(:y => 1)
+p cfg.sensor(:my_h_counter).value
 
 
 # timeline sensor examples

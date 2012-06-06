@@ -21,6 +21,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency('json')
   gem.add_runtime_dependency('redis')
 
+  gem.add_development_dependency('hashie')
   gem.add_development_dependency('foreman')
   gem.add_development_dependency('mock_redis')
   gem.add_development_dependency('rack-test')
