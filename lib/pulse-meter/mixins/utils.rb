@@ -88,6 +88,21 @@ module PulseMeter
           item
         end
       end
+
+      # Symbolizes hash keys
+      def symbolize_keys(h)
+        res = {}
+        h.each do |k, v|
+          new_k = if k.is_a?(String)
+            k.to_sym
+          else
+            k
+          end
+          res[new_k] = v
+        end
+        res
+      end
+
     end
   end
 end
