@@ -46,15 +46,6 @@ module PulseMeter
         super
       end
 
-      # Processes event
-      def event(value = nil)
-        multi do
-          current_key = current_raw_data_key
-          aggregate_event(current_key, value)
-          redis.expire(current_key, raw_data_ttl)
-        end
-      end
-
       
       # Reduces data in given interval. 
       # @note Interval id is
@@ -173,6 +164,17 @@ module PulseMeter
       def summarize(key)
         # simple
         redis.get(key)
+      end
+
+    private
+
+      # Processes event
+      def process_event(value = nil)
+        multi do
+          current_key = current_raw_data_key
+          aggregate_event(current_key, value)
+          redis.expire(current_key, raw_data_ttl)
+        end
       end
 
     end
