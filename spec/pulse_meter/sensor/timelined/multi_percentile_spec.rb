@@ -21,7 +21,9 @@ describe PulseMeter::Sensor::Timelined::MultiPercentile do
     end
     Timecop.freeze(start_of_interval + interval) do
       data = sensor.timeline(interval + epsilon).first
-      data.value.should == {0.8 => "2", 0.5 => "2"}.to_json
+      hash = JSON.parse(data.value)
+      hash.each { |k, v| hash[k] = v.to_f }
+      hash.should == {"0.8" => 2.0, "0.5" => 2.0}
     end
   end
 
