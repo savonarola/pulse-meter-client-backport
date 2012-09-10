@@ -2,11 +2,28 @@ require 'spec_helper'
 
 describe PulseMeter::Sensor::Timelined::MultiPercentile do
   it_should_behave_like "timeline sensor", {:p => [0.8]}
-  it_should_behave_like "timelined subclass", [5, 4, 2, 2, 2, 2, 2, 2, 2, 1], {0.8 => "2", 0.5 => "2"}.to_json, {:p => [0.8, 0.5]}
-  it_should_behave_like "timelined subclass", [1], {0.8 => "1"}.to_json, {:p => [0.8]}
   
-  let(:init_values) {{:ttl => 1, :raw_data_ttl => 1, :interval => 1, :reduce_delay => 1}}
-  let(:name) {"percentile"}
+  let(:name){ :counter }
+  let(:ttl){ 100 }
+  let(:raw_data_ttl){ 10 }
+  let(:interval){ 5 }
+  let(:reduce_delay){ 3 }
+  let(:init_values){ {:ttl => ttl, :raw_data_ttl => raw_data_ttl, :interval => interval, :reduce_delay => reduce_delay, :p => [0.8, 0.5] }}
+  let(:sensor){ described_class.new(name, init_values) }
+  let(:epsilon) {1}
+
+  it "should calculate summarized value" do
+    events = [5, 4, 2, 2, 2, 2, 2, 2, 2, 1]
+    interval_id = 0
+    start_of_interval = Time.at(interval_id)
+    Timecop.freeze(start_of_interval) do
+      events.each {|e| sensor.event(e)}
+    end
+    Timecop.freeze(start_of_interval + interval) do
+      data = sensor.timeline(interval + epsilon).first
+      data.value.should == {0.8 => "2", 0.5 => "2"}.to_json
+    end
+  end
 
   it "should raise exception when extra parameter is not array of percentiles" do
     expect {described_class.new(name, init_values.merge({:p => :bad}))}.to raise_exception(ArgumentError) 
