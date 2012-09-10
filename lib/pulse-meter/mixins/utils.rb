@@ -15,6 +15,19 @@ module PulseMeter
         nil
       end
 
+      # Ensures that hash value specified by key is Array
+      # @param options [Hash] hash to be looked at
+      # @param key [Object] hash key
+      # @param default [Object] default value to be returned
+      # @raise [ArgumentError] unless value is Array
+      # @return [Array]
+      def assert_array!(options, key, default = nil)
+        value = options[key] || default
+        raise ArgumentError, "#{key} should be defined" unless value
+        raise ArgumentError, "#{key} should be array" unless value.is_a?(Array)
+        value
+      end
+
       # Ensures that hash value specified by key can be converted to positive integer.
       # In case it can makes in-place conversion and returns the value.
       # @param options [Hash] hash to be looked at
